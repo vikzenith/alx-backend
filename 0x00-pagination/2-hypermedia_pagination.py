@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Simple pagination"""
 import csv
-import math
+from math import ceil
 from typing import List
 
 
@@ -40,3 +40,19 @@ class Server:
         dataset = self.dataset()
         return [] if (start >= len(dataset) or
                       end >= len(dataset)) else dataset[start:end]
+
+    def get_hyper(self, page: int = 1, page_size: int = 10) -> dict:
+        """returns an hypermedia object based on self.get_page result"""
+        page_data = self.get_page(page, page_size)
+        total_pages = ceil(len(self.dataset()) / page_size)
+        next_page = page + 1 if page + 1 < total_pages else None
+        prev_page = page - 1 if page - 1 > 1 else None
+
+        return {
+            "page_size": len(page_data),
+            "page": page,
+            "data": page_data,
+            "next_page": next_page,
+            "prev_page": prev_page,
+            "total_pages": total_pages
+        }
